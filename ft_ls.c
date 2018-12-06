@@ -6,7 +6,7 @@
 /*   By: amoutik <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 14:20:32 by amoutik           #+#    #+#             */
-/*   Updated: 2018/12/06 10:19:14 by amoutik          ###   ########.fr       */
+/*   Updated: 2018/12/06 15:34:14 by amoutik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,38 +29,35 @@ int		read_dir(DIR *dir, t_dirent **dp)
 
 void	print_files(t_file *list_files)
 {
-	while (list_files->next)
+	while (list_files)
 	{
-		printf("%s\n", list_files->f_name);
-		list_files = list_files->next;
-	}	
+		printf("-- %s\n", list_files->f_name);
+		list_files = list_files->next;	
+	}
 }
 
-
+void	add_file(t_file **list, char *d_name, size_t d_namlen)
+{
+	(*list)->f_name = ft_stralloc(d_name, d_namlen);
+}
 int		ft_ls(char *path)
 {
 	DIR *dir;
 	t_dirent *dp;
 	t_file *files;
-	t_file *tmp;
-
-	if(!(files = ft_listnew()))
+	if ((files = (t_file *)malloc(sizeof(t_file))) == NULL)
 		return (0);
-	tmp = files;
-	if(open_dir(".", &dir))
+	t_file *list = files;
+	if (open_dir(path, &dir))
 	{
 		while (read_dir(dir, &dp))
 		{
-			if (dp->d_name[0] != '.')
-			{
-				tmp->f_name = ft_stralloc(dp->d_name, dp->d_namlen);
-				if (!(tmp->next = ft_listnew()))
-					return (0);
-				tmp = tmp->next;
-			}
+			add_file(&list, dp->d_name, dp->d_namlen);
+			list->next = (t_file *)malloc(sizeof(t_file));
+			list = list->next;
 		}
-		tmp = NULL;
 		print_files(files);
+		//mergeSort(&files);
 	}
 	return (1);
 }
@@ -121,7 +118,6 @@ int		main(int argc, char **argv)
 {
 	int i;
 	int flag;
-
 	i = 1;
 	flag = 0;
 	if (argc > 1)

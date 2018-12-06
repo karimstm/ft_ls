@@ -3,10 +3,10 @@
 #include <string.h>
 #include "../inc/ft_ls.h"
 
-void partition(t_file head, t_file *front, t_file *back){
+void partition(t_file *head, t_file **front, t_file **back){
 
-	t_file fast;
-	t_file slow;
+	t_file *fast;
+	t_file *slow;
 
 	if (head == NULL || head->next == NULL){
 
@@ -43,15 +43,15 @@ void partition(t_file head, t_file *front, t_file *back){
 
 
 
-t_file mergedLists (t_file a, t_file b)
+t_file *mergedLists (t_file *a, t_file *b)
 {
-	t_file mergedList = NULL;
+	t_file *mergedList = NULL;
 	if (a == NULL)
 		return (b);
 	else if (b == NULL)
 		return (a);
 
-	if (ft_strcmp(a->f_name, b->f_name) <= 0)
+	if (strcmp(a->f_name, b->f_name) <= 0)
 	{
 		mergedList = a;
 		mergedList->next = mergedLists(a->next, b);
@@ -66,11 +66,11 @@ t_file mergedLists (t_file a, t_file b)
 
 
 
-void	mergeSort(t_file *source)
+void	mergeSort(t_file **source)
 {
-	t_file head = *source;
-	t_file a = NULL;
-	t_file b = NULL;
+	t_file *head = *source;
+	t_file *a = NULL;
+	t_file *b = NULL;
 
 	if (head == NULL || head->next == NULL)
 		return ;
@@ -81,26 +81,10 @@ void	mergeSort(t_file *source)
 	*source = mergedLists(a, b);
 }
 
+/*
+void printList(t_file *head){
 
-void push(t_file **globalhead t_file *head, char *f_name){
-
-	t_file newNode = (t_file) malloc(sizeof(struct Node));
-	newNode->f_name = ft_strdup(f_name);
-	newNode->next = NULL;
-
-	if ((*head) == NULL){
-		*head = newNode;
-		*globalHead = *head;
-	}else{
-		(*head)->next = newNode;
-		*head = newNode;
-	}
-
-}
-
-void printList(t_file head){
-
-	t_file current = head;
+	t_file current = *head;
 	while(current != NULL){
 		printf("%s\n",current->f_name);
 		current = current->next;
@@ -108,3 +92,25 @@ void printList(t_file head){
 	printf("\n");
 
 }
+*/
+
+/*
+int		main(void)
+{
+	t_file head = NULL;
+	t_file globalHead;
+	t_file *list = &globalHead;
+
+	push(&globalHead, &head, "karim");
+	push(&globalHead, &head, "ahmed");
+	//push(&head, "said");
+	//push(&head, "banana");
+	//push(&head, "Apple");
+
+	printList(list);
+	mergeSort(list);
+	printList(list);
+	return (0);
+}
+
+*/
