@@ -6,7 +6,7 @@
 /*   By: amoutik <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 14:20:32 by amoutik           #+#    #+#             */
-/*   Updated: 2018/12/05 18:55:51 by amoutik          ###   ########.fr       */
+/*   Updated: 2018/12/06 10:19:14 by amoutik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@ int		ft_ls(char *path)
 	}
 	return (1);
 }
+
 void	parse_op_2(char *op, int *flag)
 {
 	if (*op == 'a')
@@ -94,7 +95,7 @@ void	parse_op_1(char *op, int *flag)
 		while (*op)
 		{
 			if (*op == 'O')
-				*flag |= (*flag & f_list) ? f_flags : 0;
+				*flag |= f_flags;
 			else if (*op == '1')
 			{
 				*flag |= f_one;
@@ -107,8 +108,13 @@ void	parse_op_1(char *op, int *flag)
 				parse_op_2(op, flag);
 			op++;
 		}
-	}else	
-		printf("no such file %s\n", op);
+	}else
+	{
+		ft_putstr_fd("ft_ls: ", 2);
+		ft_putstr_fd(op, 2);
+		ft_putstr_fd(": No such file or directory\n", 2);
+		exit(FAILURE);
+	}
 }
 
 int		main(int argc, char **argv)
@@ -125,6 +131,7 @@ int		main(int argc, char **argv)
 			parse_op_1(argv[i], &flag);
 			i++;
 		}
+		ft_ls(".");
 		printf("%d\n", flag);
 	}
 	exit(SUCCESS);

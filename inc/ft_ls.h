@@ -6,7 +6,7 @@
 /*   By: amoutik <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 11:05:10 by amoutik           #+#    #+#             */
-/*   Updated: 2018/12/05 18:55:53 by amoutik          ###   ########.fr       */
+/*   Updated: 2018/12/06 09:20:39 by amoutik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,6 @@ typedef struct		s_file
 {
 	char			*f_name;
 	int				flags;
-	struct s_file	*sub_dir;
 	struct s_file	*next;
 	struct s_file	*prev;
 }					t_file;
