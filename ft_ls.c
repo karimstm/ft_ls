@@ -6,7 +6,7 @@
 /*   By: amoutik <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 14:20:32 by amoutik           #+#    #+#             */
-/*   Updated: 2018/12/06 15:34:14 by amoutik          ###   ########.fr       */
+/*   Updated: 2018/12/06 17:20:12 by amoutik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void	print_files(t_file *list_files)
 {
 	while (list_files)
 	{
-		printf("-- %s\n", list_files->f_name);
+		printf("%s\n", list_files->f_name);
 		list_files = list_files->next;	
 	}
 }
@@ -45,19 +45,20 @@ int		ft_ls(char *path)
 	DIR *dir;
 	t_dirent *dp;
 	t_file *files;
+	t_file *tmp;
+
 	if ((files = (t_file *)malloc(sizeof(t_file))) == NULL)
 		return (0);
-	t_file *list = files;
+	files = NULL;
 	if (open_dir(path, &dir))
 	{
 		while (read_dir(dir, &dp))
 		{
-			add_file(&list, dp->d_name, dp->d_namlen);
-			list->next = (t_file *)malloc(sizeof(t_file));
-			list = list->next;
+			ft_push(&files, dp->d_name, dp->d_namlen);
 		}
+		//print_files(files);
+		mergeSort(&files);
 		print_files(files);
-		//mergeSort(&files);
 	}
 	return (1);
 }
@@ -128,7 +129,7 @@ int		main(int argc, char **argv)
 			i++;
 		}
 		ft_ls(".");
-		printf("%d\n", flag);
+		//printf("%d\n", flag);
 	}
 	exit(SUCCESS);
 }

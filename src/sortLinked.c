@@ -34,8 +34,8 @@ void partition(t_file *head, t_file **front, t_file **back){
 		*front = head; // a
 		*back = slow->next; // b
 		slow->next = NULL;
-	//	printList(*front);
-	//	printList(*back);
+		//	printList(*front);
+		//	printList(*back);
 
 	}
 
@@ -81,36 +81,44 @@ void	mergeSort(t_file **source)
 	*source = mergedLists(a, b);
 }
 
-/*
-void printList(t_file *head){
-
-	t_file current = *head;
-	while(current != NULL){
-		printf("%s\n",current->f_name);
-		current = current->next;
-	}
-	printf("\n");
-
-}
-*/
+void ft_push(struct s_file** head_ref, char* new_data, size_t len) 
+{ 
+	t_file* new_node = (struct s_file*) malloc(sizeof(t_file)); 
+	new_node->f_name  = ft_stralloc(new_data, len); 
+	new_node->next = (*head_ref); 
+	(*head_ref)    = new_node; 
+} 
 
 /*
-int		main(void)
-{
-	t_file head = NULL;
-	t_file globalHead;
-	t_file *list = &globalHead;
+   void printList(t_file *head){
 
-	push(&globalHead, &head, "karim");
-	push(&globalHead, &head, "ahmed");
-	//push(&head, "said");
-	//push(&head, "banana");
-	//push(&head, "Apple");
+   t_file current = *head;
+   while(current != NULL){
+   printf("%s\n",current->f_name);
+   current = current->next;
+   }
+   printf("\n");
 
-	printList(list);
-	mergeSort(list);
-	printList(list);
-	return (0);
+   }
+   */
+
+/*
+   int		main(void)
+   {
+   t_file head = NULL;
+   t_file globalHead;
+   t_file *list = &globalHead;
+
+   push(&globalHead, &head, "karim");
+   push(&globalHead, &head, "ahmed");
+//push(&head, "said");
+//push(&head, "banana");
+//push(&head, "Apple");
+
+printList(list);
+mergeSort(list);
+printList(list);
+return (0);
 }
 
 */

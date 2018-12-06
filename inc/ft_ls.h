@@ -6,7 +6,7 @@
 /*   By: amoutik <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 11:05:10 by amoutik           #+#    #+#             */
-/*   Updated: 2018/12/06 13:16:07 by amoutik          ###   ########.fr       */
+/*   Updated: 2018/12/06 17:12:01 by amoutik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,5 +56,5 @@ void				ft_putendl_fd(char const *str, int fd);
 void				ft_putstr_fd(char const *str, int fd);
 void				ft_putcharl_fd(char c, int fd);
 void				mergeSort(t_file **source);
-
+void				ft_push(struct s_file **head_ref, char *name, size_t len);
 #endif
