@@ -81,10 +81,11 @@ void	mergeSort(t_file **source)
 	*source = mergedLists(a, b);
 }
 
-void ft_push(struct s_file** head_ref, char* new_data, size_t len) 
+void ft_push(struct s_file** head_ref, char* new_data, size_t len, char *path) 
 { 
 	t_file* new_node = (struct s_file*) malloc(sizeof(t_file)); 
 	new_node->f_name  = ft_stralloc(new_data, len); 
+	new_node->path = ft_strdup(path);
 	new_node->next = (*head_ref); 
 	(*head_ref)    = new_node; 
 } 

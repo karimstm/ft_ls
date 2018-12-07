@@ -6,12 +6,14 @@
 /*   By: amoutik <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 14:20:32 by amoutik           #+#    #+#             */
-/*   Updated: 2018/12/06 17:20:12 by amoutik          ###   ########.fr       */
+/*   Updated: 2018/12/07 17:46:31 by amoutik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "inc/ft_ls.h"
 #include <stdio.h>
+#define ANSI_COLOR_CYAN    "\x1b[36m"
+#define ANSI_COLOR_RESET   "\x1b[0m"
 
 int		open_dir(char *path, DIR **dir)
 {
@@ -40,25 +42,52 @@ void	add_file(t_file **list, char *d_name, size_t d_namlen)
 {
 	(*list)->f_name = ft_stralloc(d_name, d_namlen);
 }
-int		ft_ls(char *path)
+
+void	print_folders(t_file *folders, int flag)
+{
+	while (folders)
+	{
+		printf("\n%s:\n", folders->path);
+		//if (!(ft_strcmp("./.", folders->f_name) == 0 || ft_strcmp("./..", folders->f_name) == 0))
+		ft_ls(folders->path, flag);
+		folders = folders->next;
+	}
+}
+
+int		ft_ls(char *path, int flag) 
 {
 	DIR *dir;
 	t_dirent *dp;
 	t_file *files;
-	t_file *tmp;
+	char *tmp;
+	t_file *folders;
 
 	if ((files = (t_file *)malloc(sizeof(t_file))) == NULL)
 		return (0);
 	files = NULL;
+	folders = NULL;
 	if (open_dir(path, &dir))
 	{
 		while (read_dir(dir, &dp))
 		{
-			ft_push(&files, dp->d_name, dp->d_namlen);
+			if (dp->d_name[0] != '.')
+			{
+				ft_push(&files, dp->d_name, dp->d_namlen, path);
+				if (dp->d_type == DT_DIR)
+				{
+					tmp = ft_strjoin(path, "/");
+					tmp = ft_strjoin(tmp, dp->d_name);
+					ft_push(&folders, dp->d_name, dp->d_namlen, tmp);
+				}
+			}
 		}
 		//print_files(files);
 		mergeSort(&files);
+		mergeSort(&folders);
 		print_files(files);
+//		print_files(folders);
+		if (flag & f_recu)
+			print_folders(folders, flag);
 	}
 	return (1);
 }
@@ -128,7 +157,7 @@ int		main(int argc, char **argv)
 			parse_op_1(argv[i], &flag);
 			i++;
 		}
-		ft_ls(".");
+		ft_ls(".", flag);
 		//printf("%d\n", flag);
 	}
 	exit(SUCCESS);

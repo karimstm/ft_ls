@@ -1,23 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strlen.c                                        :+:      :+:    :+:   */
+/*   ft_strdup.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: amoutik <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/12/05 14:49:21 by amoutik           #+#    #+#             */
-/*   Updated: 2018/12/07 17:43:13 by amoutik          ###   ########.fr       */
+/*   Created: 2018/10/03 16:36:57 by amoutik           #+#    #+#             */
+/*   Updated: 2018/12/07 17:42:49 by amoutik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/ft_ls.h"
 
-size_t	ft_strlen(const char *str)
+char	*ft_strdup(const char *src)
 {
-	size_t i;
+	char	*string;
+	int		i;
 
 	i = 0;
-	while (str[i])
+	string = (char *)malloc(sizeof(char) * ft_strlen(src) + 1);
+	if (string == NULL)
+		return (NULL);
+	while (src[i])
+	{
+		string[i] = src[i];
 		i++;
-	return (i);
+	}
+	string[i] = '\0';
+	return (string);
 }
