@@ -6,7 +6,7 @@
 /*   By: amoutik <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 14:20:32 by amoutik           #+#    #+#             */
-/*   Updated: 2018/12/07 17:46:31 by amoutik          ###   ########.fr       */
+/*   Updated: 2018/12/08 09:34:41 by mfilahi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,17 +78,23 @@ int		ft_ls(char *path, int flag)
 					tmp = ft_strjoin(path, "/");
 					tmp = ft_strjoin(tmp, dp->d_name);
 					ft_push(&folders, dp->d_name, dp->d_namlen, tmp);
+					free(tmp);
 				}
 			}
 		}
-		//print_files(files);
 		mergeSort(&files);
-		mergeSort(&folders);
 		print_files(files);
-//		print_files(folders);
 		if (flag & f_recu)
+		{	
+			mergeSort(&folders);
 			print_folders(folders, flag);
-	}
+		}
+		free(folders);
+		free(files);
+		free(dp);
+		closedir(dir);
+	}else
+		printf("I can't access this dir\n");
 	return (1);
 }
 
@@ -140,7 +146,7 @@ void	parse_op_1(char *op, int *flag)
 		ft_putstr_fd("ft_ls: ", 2);
 		ft_putstr_fd(op, 2);
 		ft_putstr_fd(": No such file or directory\n", 2);
-		exit(FAILURE);
+		//exit(FAILURE);
 	}
 }
 
@@ -157,7 +163,7 @@ int		main(int argc, char **argv)
 			parse_op_1(argv[i], &flag);
 			i++;
 		}
-		ft_ls(".", flag);
+		ft_ls(argv[2], flag);
 		//printf("%d\n", flag);
 	}
 	exit(SUCCESS);

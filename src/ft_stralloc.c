@@ -6,7 +6,7 @@
 /*   By: amoutik <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 15:13:09 by amoutik           #+#    #+#             */
-/*   Updated: 2018/12/05 15:17:34 by amoutik          ###   ########.fr       */
+/*   Updated: 2018/12/08 09:33:59 by mfilahi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,5 +22,6 @@ char	*ft_stralloc(char *src, size_t len)
 	i = 0;
 	while (*src)
 		string[i++] = *src++;
+	string[i] = '\0';
 	return (string);
 }
