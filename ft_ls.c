@@ -6,7 +6,7 @@
 /*   By: amoutik <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 14:20:32 by amoutik           #+#    #+#             */
-/*   Updated: 2018/12/10 08:27:09 by amoutik          ###   ########.fr       */
+/*   Updated: 2018/12/10 09:32:41 by amoutik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,6 @@ int		ft_ls(char *path, int flag)
 					ft_push(&folders, dp, mystat , tmp);
 					free(tmp);
 				}
-			//	free(buf);
 			}
 		}
 		mergeSort(&files, flag);
@@ -94,8 +93,14 @@ int		ft_ls(char *path, int flag)
 		free(files);
 		free(dp);
 		closedir(dir);
-	}else
-		printf("I can't access this dir\n");
+	}
+	else
+	{
+		ft_putstr_fd("ft_ls: ", 2);
+		ft_putstr_fd(path, 2);
+		ft_putstr_fd(": No such file or directory\n", 2);
+	//	exit(FAILURE);
+	}
 	return (1);
 }
 
@@ -123,9 +128,6 @@ void	parse_op_2(char *op, int *flag)
 
 void	parse_op_1(char *op, int *flag)
 {
-	if (*op == '-')
-	{
-		op++;
 		while (*op)
 		{
 			if (*op == 'O')
@@ -142,13 +144,16 @@ void	parse_op_1(char *op, int *flag)
 				parse_op_2(op, flag);
 			op++;
 		}
-	}else
-	{
-		ft_putstr_fd("ft_ls: ", 2);
-		ft_putstr_fd(op, 2);
-		ft_putstr_fd(": No such file or directory\n", 2);
-		//exit(FAILURE);
-	}
+}
+
+int		test_file_existance(char *argv)
+{
+		if(opendir(argv) == NULL)
+		{
+			ft_putstr_fd("error\n", 2);
+			return (0);
+		}
+	return (1);
 }
 
 int		main(int argc, char **argv)
@@ -159,12 +164,27 @@ int		main(int argc, char **argv)
 	flag = 0;
 	if (argc > 1)
 	{
-		while (i <= argc - 1)
+		while (i <= argc - 1 && argv[i][0] == '-')
+			parse_op_1(++argv[i++], &flag);
+
+		if (i <= argc - 1)
 		{
-			parse_op_1(argv[i], &flag);
-			i++;
+			if (!(argc - 1 - i >= 1))
+				ft_ls(argv[i++], flag);
+			while (i <= argc - 1)
+			{	
+				if (test_file_existance(argv[i]))
+				{
+					printf("%s:\n", argv[i]);
+					ft_ls(argv[i], flag);
+				 	if (argc - 1 - i >= 1)
+						printf("\n");
+				}
+				i++;
+			}
 		}
-		ft_ls(argv[2], flag);
+		else	
+			ft_ls(".", flag);
 	}else
 		ft_ls(".", flag);
 	exit(SUCCESS);
