@@ -6,7 +6,7 @@
 /*   By: amoutik <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 14:48:44 by amoutik           #+#    #+#             */
-/*   Updated: 2018/12/08 13:29:59 by amoutik          ###   ########.fr       */
+/*   Updated: 2018/12/10 15:36:57 by amoutik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,5 +19,7 @@ int		ft_strcmp(char *s1, char *s2)
 		s1++;
 		s2++;
 	}
-	return (((unsigned char)*s1 - (unsigned char)*s2) <= 0 ? 1 : 0);
+	if (((unsigned char)*s1) - ((unsigned char)*s2) == 0)
+		return (0);
+	return (((unsigned char)*s1 - (unsigned char)*s2) < 0 ? -1 : 1);
 }

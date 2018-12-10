@@ -6,7 +6,7 @@
 /*   By: amoutik <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 14:20:32 by amoutik           #+#    #+#             */
-/*   Updated: 2018/12/10 15:26:38 by amoutik          ###   ########.fr       */
+/*   Updated: 2018/12/10 16:09:25 by amoutik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,10 @@ void	storage_into_ll(t_dirent *dp, t_file **files, t_file **folders, char *path)
 	char *tmp;
 	struct stat buf;
 	t_stat mystat;
-	stat(dp->d_name, &buf);
+	char *newpath;
+	newpath = ft_strjoin(path, "/");
+	
+	stat(ft_strjoin(newpath, dp->d_name), &buf);
 	mystat.smtime = buf.st_mtime;
 	ft_push(&(*files), dp, mystat, path);
 	if (dp->d_type == DT_DIR)
@@ -83,7 +86,7 @@ void	storage_with_dots(t_dirent *dp, t_file **files, t_file **folders, char *pat
 	stat(dp->d_name, &buf);
 	mystat.smtime = buf.st_mtime;
 	ft_push(&(*files), dp, mystat, path);
-	if (dp->d_type == DT_DIR && !(strcmp(dp->d_name, ".") == 0 || strcmp(dp->d_name, "..") == 0))
+	if (dp->d_type == DT_DIR && !(ft_strcmp(dp->d_name, ".") == 0 || ft_strcmp(dp->d_name, "..") == 0))
 	{
 		tmp = ft_strjoin(path, "/");
 		tmp = ft_strjoin(tmp, dp->d_name);
@@ -106,6 +109,7 @@ void s_byflags(t_file **files, t_file **folders, int flag)
 	mergeSort(&(*files), flag);
 	if (flag & f_recu)
 	{
+
 		print_files(*files);
 		mergeSort(&(*folders), flag);
 		print_folders(*folders, flag);
@@ -137,8 +141,6 @@ int		ft_ls(char *path, int flag)
 			}
 			else
 				storage_with_dots(dp, &files, &folders, path);
-				
-
 		s_byflags(&files, &folders, flag);
 		free_memory(&folders, &files, &dp);
 		closedir(dir);

@@ -49,7 +49,7 @@ t_file *mergedLists (t_file *a, t_file *b)
 	else if (b == NULL)
 		return (a);
 
-	if (ft_strcmp(a->f_dp->d_name, b->f_dp->d_name))
+	if (ft_strcmp(a->f_dp->d_name, b->f_dp->d_name) <= 0)
 	{
 		mergedList = a;
 		mergedList->next = mergedLists(a->next, b);
