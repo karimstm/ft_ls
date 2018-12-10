@@ -6,7 +6,7 @@
 /*   By: amoutik <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 14:20:32 by amoutik           #+#    #+#             */
-/*   Updated: 2018/12/10 15:07:52 by amoutik          ###   ########.fr       */
+/*   Updated: 2018/12/10 15:26:38 by amoutik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,26 +58,39 @@ void	print_rev_files(t_file *list_files)
 	}		
 }
 
-void	Storage_into_ll(t_dirent *dp, t_file **files, t_file **folders, char *path)
+void	storage_into_ll(t_dirent *dp, t_file **files, t_file **folders, char *path)
 {
 	char *tmp;
 	struct stat buf;
 	t_stat mystat;
-	if (dp->d_name[0] != '.')
-	{	
-		stat(dp->d_name, &buf);
-		mystat.smtime = buf.st_mtime;
-		ft_push(&(*files), dp, mystat, path);
-		if (dp->d_type == DT_DIR && 
-			!((dp->d_namlen == 1 && ft_strcmp(".", dp->d_name) == 0 ) 
-				|| (dp->d_namlen == 2 &&  ft_strcmp("..", dp->d_name) == 0)))
-		{
-			tmp = ft_strjoin(path, "/");
-			tmp = ft_strjoin(tmp, dp->d_name);
-			ft_push(&(*folders), dp, mystat, tmp);
-			free(tmp);
-		}
+	stat(dp->d_name, &buf);
+	mystat.smtime = buf.st_mtime;
+	ft_push(&(*files), dp, mystat, path);
+	if (dp->d_type == DT_DIR)
+	{
+		tmp = ft_strjoin(path, "/");
+		tmp = ft_strjoin(tmp, dp->d_name);
+		ft_push(&(*folders), dp, mystat, tmp);
+		free(tmp);
 	}
+}
+
+void	storage_with_dots(t_dirent *dp, t_file **files, t_file **folders, char *path)
+{
+	char *tmp;
+	struct stat buf;
+	t_stat mystat;
+	stat(dp->d_name, &buf);
+	mystat.smtime = buf.st_mtime;
+	ft_push(&(*files), dp, mystat, path);
+	if (dp->d_type == DT_DIR && !(strcmp(dp->d_name, ".") == 0 || strcmp(dp->d_name, "..") == 0))
+	{
+		tmp = ft_strjoin(path, "/");
+		tmp = ft_strjoin(tmp, dp->d_name);
+		ft_push(&(*folders), dp, mystat, tmp);
+		free(tmp);
+	}
+
 }
 
 
@@ -88,7 +101,7 @@ void	free_memory(t_file **folders, t_file **files, t_dirent **dp)
 	free(*dp);
 }
 
-void S_Byflags(t_file **files, t_file **folders, int flag)
+void s_byflags(t_file **files, t_file **folders, int flag)
 {
 	mergeSort(&(*files), flag);
 	if (flag & f_recu)
@@ -117,8 +130,16 @@ int		ft_ls(char *path, int flag)
 	if (open_dir(path, &dir))
 	{
 		while (read_dir(dir, &dp))
-			Storage_into_ll(dp, &files, &folders, path);
-		S_Byflags(&files, &folders, flag);
+			if (!(flag & f_seedots))
+			{
+				if (dp->d_name[0] != '.')
+					storage_into_ll(dp, &files, &folders, path);
+			}
+			else
+				storage_with_dots(dp, &files, &folders, path);
+				
+
+		s_byflags(&files, &folders, flag);
 		free_memory(&folders, &files, &dp);
 		closedir(dir);
 	}
