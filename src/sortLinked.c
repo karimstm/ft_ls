@@ -105,8 +105,8 @@ void ft_push(struct s_file** head_ref, t_dirent *dp, t_stat stat,  char *path)
 	new_node->f_dp  = dp;
 	new_node->f_stat = stat;
 	new_node->path = ft_strdup(path);
-	new_node->next = (*head_ref); 
-	(*head_ref)    = new_node; 
+	new_node->next = (*head_ref);
+	(*head_ref)    = new_node;
 } 
 
 /*

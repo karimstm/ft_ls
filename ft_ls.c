@@ -6,7 +6,7 @@
 /*   By: amoutik <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 14:20:32 by amoutik           #+#    #+#             */
-/*   Updated: 2018/12/10 09:32:41 by amoutik          ###   ########.fr       */
+/*   Updated: 2018/12/10 15:07:52 by amoutik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,10 +44,63 @@ void	print_folders(t_file *folders, int flag)
 	while (folders)
 	{
 		printf("\n%s:\n", folders->path);
-		//if (!(ft_strcmp("./.", folders->f_name) == 0 || ft_strcmp("./..", folders->f_name) == 0))
 		ft_ls(folders->path, flag);
 		folders = folders->next;
 	}
+}
+
+void	print_rev_files(t_file *list_files)
+{
+	if (list_files)
+	{
+		print_rev_files(list_files->next);
+		printf("%s\n", list_files->f_dp->d_name);
+	}		
+}
+
+void	Storage_into_ll(t_dirent *dp, t_file **files, t_file **folders, char *path)
+{
+	char *tmp;
+	struct stat buf;
+	t_stat mystat;
+	if (dp->d_name[0] != '.')
+	{	
+		stat(dp->d_name, &buf);
+		mystat.smtime = buf.st_mtime;
+		ft_push(&(*files), dp, mystat, path);
+		if (dp->d_type == DT_DIR && 
+			!((dp->d_namlen == 1 && ft_strcmp(".", dp->d_name) == 0 ) 
+				|| (dp->d_namlen == 2 &&  ft_strcmp("..", dp->d_name) == 0)))
+		{
+			tmp = ft_strjoin(path, "/");
+			tmp = ft_strjoin(tmp, dp->d_name);
+			ft_push(&(*folders), dp, mystat, tmp);
+			free(tmp);
+		}
+	}
+}
+
+
+void	free_memory(t_file **folders, t_file **files, t_dirent **dp)
+{
+	free(*folders);
+	free(*files);
+	free(*dp);
+}
+
+void S_Byflags(t_file **files, t_file **folders, int flag)
+{
+	mergeSort(&(*files), flag);
+	if (flag & f_recu)
+	{
+		print_files(*files);
+		mergeSort(&(*folders), flag);
+		print_folders(*folders, flag);
+	}
+	else if(flag & f_rev)
+		print_rev_files(*files);
+	else 
+		print_files(*files);
 }
 
 int		ft_ls(char *path, int flag) 
@@ -55,10 +108,7 @@ int		ft_ls(char *path, int flag)
 	DIR *dir;
 	t_dirent *dp;
 	t_file *files;
-	char *tmp;
 	t_file *folders;
-	t_stat mystat;
-	struct stat buf;
 
 	if ((files = (t_file *)malloc(sizeof(t_file))) == NULL)
 		return (0);
@@ -67,31 +117,9 @@ int		ft_ls(char *path, int flag)
 	if (open_dir(path, &dir))
 	{
 		while (read_dir(dir, &dp))
-		{
-			if (dp->d_name[0] != '.')
-			{
-				stat(dp->d_name, &buf);
-				mystat.smtime = buf.st_mtime;
-				ft_push(&files, dp, mystat, path);
-				if (dp->d_type == DT_DIR)
-				{
-					tmp = ft_strjoin(path, "/");
-					tmp = ft_strjoin(tmp, dp->d_name);
-					ft_push(&folders, dp, mystat , tmp);
-					free(tmp);
-				}
-			}
-		}
-		mergeSort(&files, flag);
-		print_files(files);
-		if (flag & f_recu)
-		{	
-			mergeSort(&folders, flag);
-			print_folders(folders, flag);
-		}
-		free(folders);
-		free(files);
-		free(dp);
+			Storage_into_ll(dp, &files, &folders, path);
+		S_Byflags(&files, &folders, flag);
+		free_memory(&folders, &files, &dp);
 		closedir(dir);
 	}
 	else
@@ -99,7 +127,6 @@ int		ft_ls(char *path, int flag)
 		ft_putstr_fd("ft_ls: ", 2);
 		ft_putstr_fd(path, 2);
 		ft_putstr_fd(": No such file or directory\n", 2);
-	//	exit(FAILURE);
 	}
 	return (1);
 }
@@ -128,38 +155,55 @@ void	parse_op_2(char *op, int *flag)
 
 void	parse_op_1(char *op, int *flag)
 {
-		while (*op)
+	while (*op)
+	{
+		if (*op == 'O')
+			*flag |= f_flags;
+		else if (*op == '1')
 		{
-			if (*op == 'O')
-				*flag |= f_flags;
-			else if (*op == '1')
-			{
-				*flag |= f_one;
-				*flag &= ~f_list;
-			}
-			else if (*op == 'l')
-			{
-				*flag |= (*flag & f_one) ? 0 : f_list;
-			}else
-				parse_op_2(op, flag);
-			op++;
+			*flag |= f_one;
+			*flag &= ~f_list;
 		}
+		else if (*op == 'l')
+		{
+			*flag |= (*flag & f_one) ? 0 : f_list;
+		}else
+			parse_op_2(op, flag);
+		op++;
+	}
 }
 
-int		test_file_existance(char *argv)
+char	**test_file_exist(char **argv, int argc, int start)
 {
-		if(opendir(argv) == NULL)
+	char **files;
+	int i;
+
+	i = 0;
+	if ((files = (char **)malloc(sizeof(char *))) == NULL)
+		return (NULL);
+	while (start <= argc - 1)
+	{
+		if (opendir(argv[start]) == NULL)
 		{
-			ft_putstr_fd("error\n", 2);
-			return (0);
+			ft_putstr_fd(ft_strjoin("ft_ls: ", argv[start]), 2);
+			ft_putstr_fd(": No such file or directory\n", 2);
 		}
-	return (1);
+		else
+			files[i++] = ft_strdup(argv[start]);
+		start++;
+	}
+	Mergesort(files, 0, i - 1);
+	files[i] = 0;
+	if (i == 0)
+		return (NULL);
+	return (files);
 }
 
 int		main(int argc, char **argv)
 {
 	int i;
 	int flag;
+	char **files;
 	i = 1;
 	flag = 0;
 	if (argc > 1)
@@ -171,15 +215,14 @@ int		main(int argc, char **argv)
 		{
 			if (!(argc - 1 - i >= 1))
 				ft_ls(argv[i++], flag);
-			while (i <= argc - 1)
+			files = test_file_exist(argv, argc, i);
+			i = 0;
+			while (files[i])
 			{	
-				if (test_file_existance(argv[i]))
-				{
-					printf("%s:\n", argv[i]);
-					ft_ls(argv[i], flag);
-				 	if (argc - 1 - i >= 1)
-						printf("\n");
-				}
+				printf("%s:\n", files[i]);
+				ft_ls(files[i], flag);
+				if (files[i + 1] != NULL)
+					printf("\n");
 				i++;
 			}
 		}

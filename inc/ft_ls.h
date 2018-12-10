@@ -6,7 +6,7 @@
 /*   By: amoutik <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 11:05:10 by amoutik           #+#    #+#             */
-/*   Updated: 2018/12/08 15:36:24 by amoutik          ###   ########.fr       */
+/*   Updated: 2018/12/10 14:52:07 by amoutik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,6 @@ typedef struct		s_file
 	struct s_stat	f_stat;
 	char			*path;
 	struct s_file	*next;
-	struct s_file	*prev;
 }					t_file;
 
 int					ft_strcmp(char *s1, char *s2);
@@ -68,5 +67,6 @@ char				*ft_strjoin(const char *s1, const char *s2);
 int					ft_ls(char *path, int flag);
 char				*ft_strdup(const char *src);
 int					ft_timecmp(time_t f1, time_t f2);
+void				Mergesort(char **a, int low, int high);
 
 #endif
