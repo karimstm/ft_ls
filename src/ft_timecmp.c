@@ -1,23 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strcmp.c                                        :+:      :+:    :+:   */
+/*   ft_sorttime.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: amoutik <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/12/05 14:48:44 by amoutik           #+#    #+#             */
-/*   Updated: 2018/12/08 13:29:59 by amoutik          ###   ########.fr       */
+/*   Created: 2018/12/08 13:20:52 by amoutik           #+#    #+#             */
+/*   Updated: 2018/12/08 15:42:38 by amoutik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/ft_ls.h"
 
-int		ft_strcmp(char *s1, char *s2)
+int		ft_timecmp(time_t f1, time_t f2)
 {
-	while (*s1 && *s1 == *s2)
-	{
-		s1++;
-		s2++;
-	}
-	return (((unsigned char)*s1 - (unsigned char)*s2) <= 0 ? 1 : 0);
+	if (f1 <= f2)
+		return (1);
+	return (0);
 }

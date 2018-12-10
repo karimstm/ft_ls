@@ -34,8 +34,6 @@ void partition(t_file *head, t_file **front, t_file **back){
 		*front = head; // a
 		*back = slow->next; // b
 		slow->next = NULL;
-		//	printList(*front);
-		//	printList(*back);
 
 	}
 
@@ -51,7 +49,7 @@ t_file *mergedLists (t_file *a, t_file *b)
 	else if (b == NULL)
 		return (a);
 
-	if (strcmp(a->f_name, b->f_name) <= 0)
+	if (ft_strcmp(a->f_dp->d_name, b->f_dp->d_name))
 	{
 		mergedList = a;
 		mergedList->next = mergedLists(a->next, b);
@@ -63,10 +61,28 @@ t_file *mergedLists (t_file *a, t_file *b)
 	return (mergedList);
 }
 
+t_file *mergedLists_time(t_file *a, t_file *b)
+{
+	t_file *mergedList = NULL;
+	if (a == NULL)
+		return (b);
+	else if (b == NULL)
+		return (a);
+
+	if (ft_timecmp(a->f_stat.smtime, b->f_stat.smtime) == 0)
+	{
+		mergedList = a;
+		mergedList->next = mergedLists_time(a->next, b);
+	}else
+	{
+		mergedList = b;
+		mergedList->next = mergedLists_time(a, b->next);
+	}
+	return (mergedList);
+}
 
 
-
-void	mergeSort(t_file **source)
+void	mergeSort(t_file **source, int flag)
 {
 	t_file *head = *source;
 	t_file *a = NULL;
@@ -75,16 +91,19 @@ void	mergeSort(t_file **source)
 	if (head == NULL || head->next == NULL)
 		return ;
 	partition(head, &a, &b);
-	mergeSort(&a);
-	mergeSort(&b);
-
-	*source = mergedLists(a, b);
+	mergeSort(&a, flag);
+	mergeSort(&b, flag);
+	if (flag & f_time_m)
+		*source = mergedLists_time(a, b);
+	else
+		*source = mergedLists(a, b);
 }
 
-void ft_push(struct s_file** head_ref, char* new_data, size_t len, char *path) 
+void ft_push(struct s_file** head_ref, t_dirent *dp, t_stat stat,  char *path) 
 { 
 	t_file* new_node = (struct s_file*) malloc(sizeof(t_file)); 
-	new_node->f_name  = ft_stralloc(new_data, len); 
+	new_node->f_dp  = dp;
+	new_node->f_stat = stat;
 	new_node->path = ft_strdup(path);
 	new_node->next = (*head_ref); 
 	(*head_ref)    = new_node; 

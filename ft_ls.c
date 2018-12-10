@@ -6,7 +6,7 @@
 /*   By: amoutik <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 14:20:32 by amoutik           #+#    #+#             */
-/*   Updated: 2018/12/08 09:34:41 by mfilahi          ###   ########.fr       */
+/*   Updated: 2018/12/10 08:27:09 by amoutik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,15 +33,11 @@ void	print_files(t_file *list_files)
 {
 	while (list_files)
 	{
-		printf("%s\n", list_files->f_name);
+		printf("%s\n", list_files->f_dp->d_name);
 		list_files = list_files->next;	
 	}
 }
 
-void	add_file(t_file **list, char *d_name, size_t d_namlen)
-{
-	(*list)->f_name = ft_stralloc(d_name, d_namlen);
-}
 
 void	print_folders(t_file *folders, int flag)
 {
@@ -61,6 +57,8 @@ int		ft_ls(char *path, int flag)
 	t_file *files;
 	char *tmp;
 	t_file *folders;
+	t_stat mystat;
+	struct stat buf;
 
 	if ((files = (t_file *)malloc(sizeof(t_file))) == NULL)
 		return (0);
@@ -72,21 +70,24 @@ int		ft_ls(char *path, int flag)
 		{
 			if (dp->d_name[0] != '.')
 			{
-				ft_push(&files, dp->d_name, dp->d_namlen, path);
+				stat(dp->d_name, &buf);
+				mystat.smtime = buf.st_mtime;
+				ft_push(&files, dp, mystat, path);
 				if (dp->d_type == DT_DIR)
 				{
 					tmp = ft_strjoin(path, "/");
 					tmp = ft_strjoin(tmp, dp->d_name);
-					ft_push(&folders, dp->d_name, dp->d_namlen, tmp);
+					ft_push(&folders, dp, mystat , tmp);
 					free(tmp);
 				}
+			//	free(buf);
 			}
 		}
-		mergeSort(&files);
+		mergeSort(&files, flag);
 		print_files(files);
 		if (flag & f_recu)
 		{	
-			mergeSort(&folders);
+			mergeSort(&folders, flag);
 			print_folders(folders, flag);
 		}
 		free(folders);
@@ -164,7 +165,7 @@ int		main(int argc, char **argv)
 			i++;
 		}
 		ft_ls(argv[2], flag);
-		//printf("%d\n", flag);
-	}
+	}else
+		ft_ls(".", flag);
 	exit(SUCCESS);
 }

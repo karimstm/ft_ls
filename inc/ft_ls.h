@@ -6,7 +6,7 @@
 /*   By: amoutik <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 11:05:10 by amoutik           #+#    #+#             */
-/*   Updated: 2018/12/07 17:43:26 by amoutik          ###   ########.fr       */
+/*   Updated: 2018/12/08 15:36:24 by amoutik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,10 +40,16 @@ enum	e_flags
 	f_time_m = 128
 };
 
+typedef struct 		s_stat
+{
+	time_t	smtime;
+}					t_stat;
+
 typedef struct		s_file
 {
-	char			*f_name;
+	t_dirent		*f_dp;
 	int				flags;
+	struct s_stat	f_stat;
 	char			*path;
 	struct s_file	*next;
 	struct s_file	*prev;
@@ -56,10 +62,11 @@ char				*ft_stralloc(char *str, size_t len);
 void				ft_putendl_fd(char const *str, int fd);
 void				ft_putstr_fd(char const *str, int fd);
 void				ft_putcharl_fd(char c, int fd);
-void				mergeSort(t_file **source);
-void				ft_push(struct s_file **head_ref, char *name, size_t len, char *path);
+void				mergeSort(t_file **source, int flag);
+void				ft_push(struct s_file **head_ref, t_dirent *dp, t_stat stat, char *path);
 char				*ft_strjoin(const char *s1, const char *s2);
 int					ft_ls(char *path, int flag);
 char				*ft_strdup(const char *src);
+int					ft_timecmp(time_t f1, time_t f2);
 
 #endif
