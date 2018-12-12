@@ -49,7 +49,7 @@ t_file *mergedLists (t_file *a, t_file *b)
 	else if (b == NULL)
 		return (a);
 
-	if (ft_strcmp(a->f_dp->d_name, b->f_dp->d_name) <= 0)
+	if (ft_strcmp(a->d_name, b->d_name) <= 0)
 	{
 		mergedList = a;
 		mergedList->next = mergedLists(a->next, b);
@@ -101,8 +101,10 @@ void	mergeSort(t_file **source, int flag)
 
 void ft_push(struct s_file** head_ref, t_dirent *dp, t_stat stat,  char *path) 
 { 
-	t_file* new_node = (struct s_file*) malloc(sizeof(t_file)); 
-	new_node->f_dp  = dp;
+
+	//printf("|%s|\n", dp->d_name);
+	t_file* new_node = (struct s_file*) malloc(sizeof(t_file));
+	new_node->d_name = ft_stralloc(dp->d_name, dp->d_namlen);
 	new_node->f_stat = stat;
 	new_node->path = ft_strdup(path);
 	new_node->next = (*head_ref);

@@ -6,14 +6,17 @@
 /*   By: amoutik <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 14:20:32 by amoutik           #+#    #+#             */
-/*   Updated: 2018/12/10 16:09:25 by amoutik          ###   ########.fr       */
+/*   Updated: 2018/12/12 16:43:36 by amoutik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "inc/ft_ls.h"
+#include "../inc/ft_ls.h"
 #include <stdio.h>
+#include "ft_printf.h"
 #define ANSI_COLOR_CYAN    "\x1b[36m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
+
+t_stat lenstat;
 
 int		open_dir(char *path, DIR **dir)
 {
@@ -29,33 +32,102 @@ int		read_dir(DIR *dir, t_dirent **dp)
 	return (0);	
 }
 
-void	print_files(t_file *list_files)
+void	init_stat(t_stat *stat)
 {
-	while (list_files)
+	stat->hardlen = 0;
+	stat->userlen = 0;
+	stat->grouplen = 0;
+	stat->sizelen = 0;
+	stat->total_block = 0;
+}
+
+void	linkname(off_t st_size, char *path)
+{
+	char *linkname;
+
+	linkname = malloc(st_size + 1);
+    if (linkname == NULL)
+		return ;
+   if(readlink(path, linkname, st_size + 1))
+	   ft_printf(" -> %s", linkname);
+   free(linkname);
+}
+
+
+void	get_permissions(mode_t st_mode, char *path)
+{
+	char perm[20];
+	ft_strmode(st_mode, perm, path);
+	ft_printf("%s ", perm);
+}
+
+void	print_total(int flag)
+{
+	if (flag & f_list)
+		ft_printf("total %lld\n", lenstat.total_block); 
+}
+
+void	print_files(t_file *list_files, int flag)
+{
+	struct stat sb;
+
+	if (list_files)
 	{
-		printf("%s\n", list_files->f_dp->d_name);
-		list_files = list_files->next;	
+		if (flag & f_list)
+		{
+			if (flag & f_rev)
+				print_files(list_files->next, flag);
+			lstat(list_files->path, &sb);
+			get_permissions(sb.st_mode, list_files->path);
+			ft_printf("%*d ", lenstat.hardlen, sb.st_nlink);
+			ft_printf("%-*s  ", (int)lenstat.userlen, (getpwuid(sb.st_uid))->pw_name);
+			ft_printf("%-*s  ", (int)lenstat.grouplen, (getgrgid(sb.st_gid))->gr_name);
+			ft_printf("%*lld ", lenstat.sizelen, sb.st_size);
+			ft_printf("%s ", ft_strtrim(ctime(&sb.st_mtimespec.tv_sec)));	
+		}	
+		ft_printf("%s", list_files->d_name);
+		if (M_ISLNK(sb.st_mode) && (flag & f_list))
+			linkname(sb.st_size, list_files->path);
+		ft_printf("\n");
+		if (flag & f_xatt)
+				ft_getxattr(list_files->path);
+		if (!(flag & f_rev))
+			print_files(list_files->next, flag);
 	}
+	init_stat(&lenstat);
 }
 
 
 void	print_folders(t_file *folders, int flag)
 {
-	while (folders)
+	if (folders)
 	{
-		printf("\n%s:\n", folders->path);
+		if (flag & f_rev)
+			print_folders(folders->next, flag);
+		ft_printf("\n%s:\n", folders->path);
 		ft_ls(folders->path, flag);
-		folders = folders->next;
+		if (!(flag & f_rev))
+			print_folders(folders->next, flag);
+		init_stat(&lenstat);
 	}
 }
 
-void	print_rev_files(t_file *list_files)
+void	print_rev_files(t_file *list_files, int flag)
 {
 	if (list_files)
 	{
-		print_rev_files(list_files->next);
-		printf("%s\n", list_files->f_dp->d_name);
+		print_rev_files(list_files->next, flag);
+		ft_printf("%s\n", list_files->d_name);
 	}		
+}
+
+void	get_len(t_stat *stat, struct stat sb)
+{
+	stat->hardlen = MAX(stat->hardlen, number_len(sb.st_nlink));
+	stat->userlen = MAX(stat->userlen, ft_strlen((getpwuid(sb.st_uid))->pw_name));
+	stat->grouplen = MAX(stat->grouplen, ft_strlen((getgrgid(sb.st_gid))->gr_name));
+	stat->sizelen = MAX(stat->sizelen, number_len(sb.st_size));
+	stat->total_block += sb.st_blocks;
 }
 
 void	storage_into_ll(t_dirent *dp, t_file **files, t_file **folders, char *path)
@@ -64,11 +136,12 @@ void	storage_into_ll(t_dirent *dp, t_file **files, t_file **folders, char *path)
 	struct stat buf;
 	t_stat mystat;
 	char *newpath;
+
 	newpath = ft_strjoin(path, "/");
-	
-	stat(ft_strjoin(newpath, dp->d_name), &buf);
+	lstat(ft_strjoin(newpath, dp->d_name), &buf);
 	mystat.smtime = buf.st_mtime;
-	ft_push(&(*files), dp, mystat, path);
+	ft_push(&(*files), dp, mystat, ft_strjoin(newpath, dp->d_name));
+	get_len(&lenstat, buf);
 	if (dp->d_type == DT_DIR)
 	{
 		tmp = ft_strjoin(path, "/");
@@ -76,16 +149,23 @@ void	storage_into_ll(t_dirent *dp, t_file **files, t_file **folders, char *path)
 		ft_push(&(*folders), dp, mystat, tmp);
 		free(tmp);
 	}
+	free(newpath);
 }
 
 void	storage_with_dots(t_dirent *dp, t_file **files, t_file **folders, char *path)
-{
+{	
 	char *tmp;
 	struct stat buf;
 	t_stat mystat;
-	stat(dp->d_name, &buf);
+	char *newpath;
+
+	newpath = ft_strjoin(path, "/");
+	lstat(ft_strjoin(newpath, dp->d_name), &buf);
 	mystat.smtime = buf.st_mtime;
-	ft_push(&(*files), dp, mystat, path);
+	if (buf.st_mode == 0)
+		return ;
+	ft_push(&(*files), dp, mystat, ft_strjoin(newpath, dp->d_name));
+	get_len(&lenstat, buf);
 	if (dp->d_type == DT_DIR && !(ft_strcmp(dp->d_name, ".") == 0 || ft_strcmp(dp->d_name, "..") == 0))
 	{
 		tmp = ft_strjoin(path, "/");
@@ -93,7 +173,7 @@ void	storage_with_dots(t_dirent *dp, t_file **files, t_file **folders, char *pat
 		ft_push(&(*folders), dp, mystat, tmp);
 		free(tmp);
 	}
-
+	free(newpath);
 }
 
 
@@ -107,33 +187,33 @@ void	free_memory(t_file **folders, t_file **files, t_dirent **dp)
 void s_byflags(t_file **files, t_file **folders, int flag)
 {
 	mergeSort(&(*files), flag);
+	print_total(flag);
 	if (flag & f_recu)
 	{
 
-		print_files(*files);
+		print_files(*files, flag);
 		mergeSort(&(*folders), flag);
 		print_folders(*folders, flag);
 	}
-	else if(flag & f_rev)
-		print_rev_files(*files);
-	else 
-		print_files(*files);
+	else
+		print_files(*files, flag);
 }
 
-int		ft_ls(char *path, int flag) 
+void	ft_ls(char *path, int flag) 
 {
 	DIR *dir;
 	t_dirent *dp;
 	t_file *files;
 	t_file *folders;
-
+	
 	if ((files = (t_file *)malloc(sizeof(t_file))) == NULL)
-		return (0);
+		return ;
 	files = NULL;
 	folders = NULL;
 	if (open_dir(path, &dir))
 	{
 		while (read_dir(dir, &dp))
+		{
 			if (!(flag & f_seedots))
 			{
 				if (dp->d_name[0] != '.')
@@ -141,17 +221,13 @@ int		ft_ls(char *path, int flag)
 			}
 			else
 				storage_with_dots(dp, &files, &folders, path);
+		}
 		s_byflags(&files, &folders, flag);
 		free_memory(&folders, &files, &dp);
 		closedir(dir);
 	}
 	else
-	{
-		ft_putstr_fd("ft_ls: ", 2);
-		ft_putstr_fd(path, 2);
-		ft_putstr_fd(": No such file or directory\n", 2);
-	}
-	return (1);
+		error_msg(path);
 }
 
 void	parse_op_2(char *op, int *flag)
@@ -207,10 +283,7 @@ char	**test_file_exist(char **argv, int argc, int start)
 	while (start <= argc - 1)
 	{
 		if (opendir(argv[start]) == NULL)
-		{
-			ft_putstr_fd(ft_strjoin("ft_ls: ", argv[start]), 2);
-			ft_putstr_fd(": No such file or directory\n", 2);
-		}
+			error_msg(argv[start]);
 		else
 			files[i++] = ft_strdup(argv[start]);
 		start++;
@@ -218,7 +291,7 @@ char	**test_file_exist(char **argv, int argc, int start)
 	Mergesort(files, 0, i - 1);
 	files[i] = 0;
 	if (i == 0)
-		return (NULL);
+		exit(DANGER);
 	return (files);
 }
 
@@ -231,22 +304,24 @@ int		main(int argc, char **argv)
 	flag = 0;
 	if (argc > 1)
 	{
-		while (i <= argc - 1 && argv[i][0] == '-')
+		while (i <= argc - 1 && argv[i][0] == '-' && ft_strlen(argv[i]) > 1)
 			parse_op_1(++argv[i++], &flag);
-
 		if (i <= argc - 1)
 		{
 			if (!(argc - 1 - i >= 1))
 				ft_ls(argv[i++], flag);
-			files = test_file_exist(argv, argc, i);
-			i = 0;
-			while (files[i])
-			{	
-				printf("%s:\n", files[i]);
-				ft_ls(files[i], flag);
-				if (files[i + 1] != NULL)
-					printf("\n");
-				i++;
+			else
+			{
+				files = test_file_exist(argv, argc, i);
+				i = 0;
+				while (files[i])
+				{	
+					ft_printf("%s:\n", files[i]);
+					ft_ls(files[i], flag);
+					if (files[i + 1] != NULL)
+						ft_printf("\n");
+					i++;
+				}
 			}
 		}
 		else	
