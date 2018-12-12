@@ -6,7 +6,7 @@
 /*   By: amoutik <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 14:20:32 by amoutik           #+#    #+#             */
-/*   Updated: 2018/12/12 16:43:36 by amoutik          ###   ########.fr       */
+/*   Updated: 2018/12/12 17:14:49 by amoutik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,9 @@ void	print_files(t_file *list_files, int flag)
 			ft_printf("%-*s  ", (int)lenstat.grouplen, (getgrgid(sb.st_gid))->gr_name);
 			ft_printf("%*lld ", lenstat.sizelen, sb.st_size);
 			ft_printf("%s ", ft_strtrim(ctime(&sb.st_mtimespec.tv_sec)));	
-		}	
+		}
+		if ((flag & f_rev) && !(flag & f_list))
+			print_files(list_files->next, flag);
 		ft_printf("%s", list_files->d_name);
 		if (M_ISLNK(sb.st_mode) && (flag & f_list))
 			linkname(sb.st_size, list_files->path);
@@ -110,15 +112,6 @@ void	print_folders(t_file *folders, int flag)
 			print_folders(folders->next, flag);
 		init_stat(&lenstat);
 	}
-}
-
-void	print_rev_files(t_file *list_files, int flag)
-{
-	if (list_files)
-	{
-		print_rev_files(list_files->next, flag);
-		ft_printf("%s\n", list_files->d_name);
-	}		
 }
 
 void	get_len(t_stat *stat, struct stat sb)

@@ -6,7 +6,7 @@
 /*   By: amoutik <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 11:05:10 by amoutik           #+#    #+#             */
-/*   Updated: 2018/12/12 16:38:50 by amoutik          ###   ########.fr       */
+/*   Updated: 2018/12/12 17:15:38 by amoutik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 # include <unistd.h>
 #include <sys/xattr.h>
 #include <sys/acl.h>
+#include "ft_printf.h"
 
 # define 	SUCCESS 0
 # define 	FAILURE 1

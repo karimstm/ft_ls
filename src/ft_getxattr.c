@@ -6,7 +6,7 @@
 /*   By: amoutik <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/12 14:20:23 by amoutik           #+#    #+#             */
-/*   Updated: 2018/12/12 16:27:38 by amoutik          ###   ########.fr       */
+/*   Updated: 2018/12/12 17:15:21 by amoutik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,5 +22,5 @@ void	ft_getxattr(char *path)
 	len = listxattr(path, name, 0, 0);
 	key = listxattr(path, name, len, 0);
 	if ((value = getxattr(path, name, NULL, 0, 0, 0)) > 0)
-		printf("        %s      %zd\n", name, value);
+		ft_printf("        %s      %zd\n", name, value);
 }
