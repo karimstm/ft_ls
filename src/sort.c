@@ -6,7 +6,7 @@
 /*   By: mfilahi <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/13 11:25:18 by mfilahi           #+#    #+#             */
-/*   Updated: 2018/12/13 11:51:10 by mfilahi          ###   ########.fr       */
+/*   Updated: 2018/12/13 14:45:14 by mfilahi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ void	merge(char **a, int low, int mid, int high)
 	}
 }
 
-void	Mergesort(char **a, int low, int high)
+void	merge_sort(char **a, int low, int high)
 {
 	int m;
 

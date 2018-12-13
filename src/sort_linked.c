@@ -6,7 +6,7 @@
 /*   By: mfilahi <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/13 11:41:34 by mfilahi           #+#    #+#             */
-/*   Updated: 2018/12/13 13:21:49 by mfilahi          ###   ########.fr       */
+/*   Updated: 2018/12/13 14:47:47 by mfilahi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ void	partition(t_file *head, t_file **front, t_file **back)
 	}
 }
 
-t_file	*mergedLists(t_file *a, t_file *b)
+t_file	*merged_lists(t_file *a, t_file *b)
 {
 	t_file *mergedList;
 
@@ -66,7 +66,7 @@ t_file	*mergedLists(t_file *a, t_file *b)
 	return (mergedList);
 }
 
-t_file	*mergedLists_time(t_file *a, t_file *b)
+t_file	*merged_lists_time(t_file *a, t_file *b)
 {
 	t_file *mergedList;
 
@@ -88,7 +88,7 @@ t_file	*mergedLists_time(t_file *a, t_file *b)
 	return (mergedList);
 }
 
-void	mergeSort(t_file **source, int flag)
+void	g_merge_sort(t_file **source, int flag)
 {
 	t_file *head;
 	t_file *a;
@@ -100,12 +100,12 @@ void	mergeSort(t_file **source, int flag)
 	if (head == NULL || head->next == NULL)
 		return ;
 	partition(head, &a, &b);
-	mergeSort(&a, flag);
-	mergeSort(&b, flag);
+	g_merge_sort(&a, flag);
+	g_merge_sort(&b, flag);
 	if (flag & f_time_m)
-		*source = mergedLists_time(a, b);
+		*source = merged_lists_time(a, b);
 	else
-		*source = mergedLists(a, b);
+		*source = merged_lists(a, b);
 }
 
 void	ft_push(struct s_file **head_ref,

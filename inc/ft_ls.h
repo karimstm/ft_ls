@@ -6,7 +6,7 @@
 /*   By: amoutik <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 11:05:10 by amoutik           #+#    #+#             */
-/*   Updated: 2018/12/13 13:12:38 by mfilahi          ###   ########.fr       */
+/*   Updated: 2018/12/13 14:48:08 by mfilahi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,6 @@
 
 typedef struct dirent	t_dirent;
 typedef long long int	t_llint;
-
 enum	e_flags
 {
 	f_flags = 0x1,
@@ -70,6 +69,8 @@ typedef struct		s_stat
 	t_llint	total_block;
 }					t_stat;
 
+t_stat				g_lenstat;
+
 typedef struct		s_file
 {
 	t_dirent		*f_dp;
@@ -89,14 +90,14 @@ char				*ft_stralloc(char *str, size_t len);
 void				ft_putendl_fd(char const *str, int fd);
 void				ft_putstr_fd(char const *str, int fd);
 void				ft_putcharl_fd(char c, int fd);
-void				mergeSort(t_file **source, int flag);
+void				g_merge_sort(t_file **source, int flag);
 void				ft_push(struct s_file **head_ref, t_dirent *dp,
-							t_stat stat, char *path);
+		t_stat stat, char *path);
 char				*ft_strjoin(const char *s1, const char *s2);
 void				ft_ls(char *path, int flag);
 char				*ft_strdup(const char *src);
 int					ft_timecmp(time_t f1, time_t f2);
-void				Mergesort(char **a, int low, int high);
+void				merge_sort(char **a, int low, int high);
 int					number_len(long long int value);
 int					ft_isspace(int c);
 char				*ft_strtrim(char const *s);
@@ -104,5 +105,28 @@ char				*ft_strnew(size_t size);
 void				error_msg(char *path);
 void				ft_strmode(mode_t mode, char *p, char *path);
 void				ft_getxattr(char *path);
+void				print_files(t_file *list_files, int flag);
+int					open_dir(char *path, DIR **dir);
+int					read_dir(DIR *dir, t_dirent **dp);
+void				init_stat(t_stat *stat);
+void				linkname(off_t st_size, char *path);
+void				get_permissions(mode_t st_mode, char *path);
+void				print_folders(t_file *folders, int flag);
+void				print_files(t_file *list_files, int flag);
+void				print_list(t_file *list_files, int flag, struct stat *sb);
+void				print_total(int flag);
+void				get_len(t_stat *stat, struct stat sb);
+void				free_memory(t_file **folders, t_file **files, t_dirent **dp);
+void				param_files(char **files, int flag, char **argv, int argc);
+char				**test_file_exist(char **argv, int argc, int start);
+void				parse_op_1(char *op, int *flag);
+void				parse_op_2(char *op, int *flag);
+void				s_ft_ls(t_dirent *dp, t_file **files, t_file **folders,
+						char *path);
+void				s_byflags(t_file **files, t_file **folders, int flag);
+void				storage_with_dots(t_dirent *dp, t_file **files,
+						t_file **folders, char *path);
+void				storage_into_ll(t_dirent *dp, t_file **files,
+						t_file **folders, char *path);
 
 #endif
