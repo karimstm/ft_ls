@@ -6,7 +6,7 @@
 /*   By: amoutik <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/12 11:12:25 by amoutik           #+#    #+#             */
-/*   Updated: 2018/12/12 16:28:33 by amoutik          ###   ########.fr       */
+/*   Updated: 2018/12/13 11:56:20 by mfilahi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	user_perm(mode_t mode, char **p)
 		*(*p)++ = '-';
 	else if (res == S_IXUSR)
 		*(*p)++ = 'x';
-	else if (res ==  S_ISUID)
+	else if (res == S_ISUID)
 		*(*p)++ = 'S';
 	else if (res == (S_IXUSR | S_ISUID))
 		*(*p)++ = 's';
@@ -52,7 +52,7 @@ void	group_perm(mode_t mode, char **p)
 		*(*p)++ = '-';
 	else if (res == S_IXGRP)
 		*(*p)++ = 'x';
-	else if (res ==  S_ISGID)
+	else if (res == S_ISGID)
 		*(*p)++ = 'S';
 	else if (res == (S_IXGRP | S_ISGID))
 		*(*p)++ = 's';
@@ -75,7 +75,7 @@ void	other_perm(mode_t mode, char **p)
 		*(*p)++ = '-';
 	else if (res == S_IXOTH)
 		*(*p)++ = 'x';
-	else if (res ==  S_ISVTX)
+	else if (res == S_ISVTX)
 		*(*p)++ = 'T';
 	else if (res == (S_IXOTH | S_ISVTX))
 		*(*p)++ = 't';
@@ -83,19 +83,21 @@ void	other_perm(mode_t mode, char **p)
 
 void	acl_perm(char **p, char *filename)
 {
-	acl_t acl = NULL;
-	acl_entry_t dummy;
-	ssize_t xattr = 0;
+	acl_t		acl;
+	acl_entry_t	dummy;
+	ssize_t		xattr;
 
+	xattr = 0;
+	acl = NULL;
 	acl = acl_get_link_np(filename, ACL_TYPE_EXTENDED);
-	if (acl && acl_get_entry(acl, ACL_FIRST_ENTRY, &dummy) == -1) {
+	if (acl && acl_get_entry(acl, ACL_FIRST_ENTRY, &dummy) == -1)
+	{
 		acl_free(acl);
 		acl = NULL;
 	}
 	xattr = listxattr(filename, NULL, 0, XATTR_NOFOLLOW);
 	if (xattr < 0)
 		xattr = 0;
-
 	if (xattr > 0)
 		*(*p)++ = '@';
 	else if (acl != NULL)
@@ -121,7 +123,7 @@ void	ft_strmode(mode_t mode, char *p, char *path)
 		*p++ = 'p';
 	else if (M_ISSOCK(mode))
 		*p++ = 's';
-	else if(M_ISWHT(mode))
+	else if (M_ISWHT(mode))
 		*p++ = 'w';
 	else
 		*p++ = '?';

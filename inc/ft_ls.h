@@ -6,7 +6,7 @@
 /*   By: amoutik <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 11:05:10 by amoutik           #+#    #+#             */
-/*   Updated: 2018/12/13 11:20:42 by amoutik          ###   ########.fr       */
+/*   Updated: 2018/12/13 13:12:38 by mfilahi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,14 +30,14 @@
 # define FAILURE 1
 # define DANGER 2
 # define MAX(a, b) ((a) >= (b) ? (a) : (b))
-# define M_FIFO(m) (((m & 0170000) == 0140000) ? 1 : 0)
+# define M__FIFO(m) ((m & 0170000) == 0140000)
 # define M_ISDIR(m)	((m & 0170000) == 0040000)
 # define M_ISCHR(m)	((m & 0170000) == 0020000)
 # define M_ISBLK(m)	((m & 0170000) == 0060000)
 # define M_ISREG(m)	((m & 0170000) == 0100000)
-# define M_ISFIFO(m) ((m & 0170000) == 0010000 || M_FIFO
+# define M_ISFIFO(m) (((m & 0170000) == 0010000) || M__FIFO(m))
 # define M_ISLNK(m)	((m & 0170000) == 0120000)
-# define M_ISSOCK(m) ((m & 0170000) == 0010000 || M_FIFO
+# define M_ISSOCK(m) (((m & 0170000) == 0010000) || M__FIFO(m))
 # define M_ISWHT(m)	((m & 0170000) == 0160000)
 
 typedef struct dirent	t_dirent;

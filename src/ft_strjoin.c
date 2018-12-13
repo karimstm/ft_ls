@@ -6,7 +6,7 @@
 /*   By: amoutik <abdelkarimoutik@gmail.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/10/05 16:06:42 by amoutik           #+#    #+#             */
-/*   Updated: 2018/12/07 16:47:50 by amoutik          ###   ########.fr       */
+/*   Updated: 2018/12/13 11:24:13 by mfilahi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ char	*ft_strjoin(char const *s1, char const *s2)
 {
 	char			*string;
 	unsigned int	len_s1;
-	unsigned int 	len_s2;
+	unsigned int	len_s2;
 	unsigned int	i;
 
 	len_s1 = ft_strlen((char *)s1);
