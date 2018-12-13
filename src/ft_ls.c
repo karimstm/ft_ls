@@ -6,7 +6,7 @@
 /*   By: amoutik <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 14:20:32 by amoutik           #+#    #+#             */
-/*   Updated: 2018/12/12 17:14:49 by amoutik          ###   ########.fr       */
+/*   Updated: 2018/12/13 10:26:50 by amoutik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,8 @@ void	init_stat(t_stat *stat)
 	stat->userlen = 0;
 	stat->grouplen = 0;
 	stat->sizelen = 0;
-	stat->total_block = 0;
+	//stat->total_block = 0;
+	stat->blocksize = 0;
 }
 
 void	linkname(off_t st_size, char *path)
@@ -76,12 +77,20 @@ void	print_files(t_file *list_files, int flag)
 		if (flag & f_list)
 		{
 			if (flag & f_rev)
+			{
 				print_files(list_files->next, flag);
+				lenstat.total_block = 0;
+				//init_stat(&lenstat);
+			}
 			lstat(list_files->path, &sb);
+			if (flag & f_blocksz)
+				ft_printf("%*d ", lenstat.blocksize, sb.st_blocks);
 			get_permissions(sb.st_mode, list_files->path);
 			ft_printf("%*d ", lenstat.hardlen, sb.st_nlink);
-			ft_printf("%-*s  ", (int)lenstat.userlen, (getpwuid(sb.st_uid))->pw_name);
-			ft_printf("%-*s  ", (int)lenstat.grouplen, (getgrgid(sb.st_gid))->gr_name);
+			if (!(flag & f_no_owner))
+				ft_printf("%-*s  ", (int)lenstat.userlen, (getpwuid(sb.st_uid))->pw_name);
+			if (!(flag & f_no_group))
+				ft_printf("%-*s  ", (int)lenstat.grouplen, (getgrgid(sb.st_gid))->gr_name);
 			ft_printf("%*lld ", lenstat.sizelen, sb.st_size);
 			ft_printf("%s ", ft_strtrim(ctime(&sb.st_mtimespec.tv_sec)));	
 		}
@@ -96,7 +105,7 @@ void	print_files(t_file *list_files, int flag)
 		if (!(flag & f_rev))
 			print_files(list_files->next, flag);
 	}
-	init_stat(&lenstat);
+	lenstat.total_block = 0;
 }
 
 
@@ -119,6 +128,7 @@ void	get_len(t_stat *stat, struct stat sb)
 	stat->hardlen = MAX(stat->hardlen, number_len(sb.st_nlink));
 	stat->userlen = MAX(stat->userlen, ft_strlen((getpwuid(sb.st_uid))->pw_name));
 	stat->grouplen = MAX(stat->grouplen, ft_strlen((getgrgid(sb.st_gid))->gr_name));
+	stat->blocksize = MAX(stat->blocksize, number_len(sb.st_blocks));
 	stat->sizelen = MAX(stat->sizelen, number_len(sb.st_size));
 	stat->total_block += sb.st_blocks;
 }
@@ -172,20 +182,30 @@ void	storage_with_dots(t_dirent *dp, t_file **files, t_file **folders, char *pat
 
 void	free_memory(t_file **folders, t_file **files, t_dirent **dp)
 {
-	free(*folders);
-	free(*files);
+	t_file *tmp;
+	while ((tmp = *folders) != NULL)
+	{
+		*folders = (*folders)->next;
+		free(tmp);
+	}
+	while ((tmp = *files) != NULL)
+	{
+		*files = (*files)->next;
+		free(tmp);
+	}
 	free(*dp);
 }
 
 void s_byflags(t_file **files, t_file **folders, int flag)
 {
-	mergeSort(&(*files), flag);
+	if (!(flag & f_no_sort))
+		mergeSort(&(*files), flag);
 	print_total(flag);
 	if (flag & f_recu)
 	{
-
 		print_files(*files, flag);
-		mergeSort(&(*folders), flag);
+		if (!(flag & f_no_sort))
+			mergeSort(&(*folders), flag);
 		print_folders(*folders, flag);
 	}
 	else
@@ -216,6 +236,7 @@ void	ft_ls(char *path, int flag)
 				storage_with_dots(dp, &files, &folders, path);
 		}
 		s_byflags(&files, &folders, flag);
+		init_stat(&lenstat);
 		free_memory(&folders, &files, &dp);
 		closedir(dir);
 	}
@@ -235,6 +256,14 @@ void	parse_op_2(char *op, int *flag)
 		*flag |= f_rev;
 	else if (*op == 't')
 		*flag |= f_time_m;
+	else if (*op == 's')
+		*flag |= f_blocksz;
+	else if (*op == 'f')
+	{
+		*flag |= f_no_sort;
+		*flag |= f_seedots;
+		*flag |= f_rev;
+	}
 	else
 	{
 		ft_putstr_fd("ft_ls: illegal option -- ", 2);
@@ -251,6 +280,16 @@ void	parse_op_1(char *op, int *flag)
 	{
 		if (*op == 'O')
 			*flag |= f_flags;
+		else if (*op == 'g')
+		{
+			*flag |= f_no_owner;
+			*flag |= f_list;
+		}
+		else if (*op == 'o')
+		{
+			*flag |= f_no_group;
+			*flag |= f_list;
+		}
 		else if (*op == '1')
 		{
 			*flag |= f_one;

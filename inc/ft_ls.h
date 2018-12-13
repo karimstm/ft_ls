@@ -6,7 +6,7 @@
 /*   By: amoutik <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 11:05:10 by amoutik           #+#    #+#             */
-/*   Updated: 2018/12/12 17:15:38 by amoutik          ###   ########.fr       */
+/*   Updated: 2018/12/13 09:37:50 by amoutik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,14 +46,18 @@ typedef long long int	llint;
 
 enum	e_flags
 {
-	f_flags = 1,
-	f_xatt = 2,
-	f_one = 4,
-	f_seedots = 8,
-	f_list = 16,
-	f_recu = 32,
-	f_rev = 64,
-	f_time_m = 128
+	f_flags = 0x1,
+	f_xatt = 0x2,
+	f_one = 0x4,
+	f_seedots = 0x8,
+	f_list = 0x10,
+	f_recu = 0x20,
+	f_rev = 0x40,
+	f_time_m = 0x80,
+	f_no_owner = 0x100,
+	f_no_group = 0x200,
+	f_no_sort = 0x400,
+	f_blocksz = 0x800
 };
 
 typedef struct 		s_stat
@@ -63,6 +67,7 @@ typedef struct 		s_stat
 	size_t	userlen;
 	size_t 	grouplen;
 	int		sizelen;
+	int		blocksize;
 	llint	total_block;
 }					t_stat;
 
