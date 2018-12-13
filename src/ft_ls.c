@@ -6,7 +6,7 @@
 /*   By: amoutik <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 14:20:32 by amoutik           #+#    #+#             */
-/*   Updated: 2018/12/13 14:48:24 by mfilahi          ###   ########.fr       */
+/*   Updated: 2018/12/13 14:55:20 by amoutik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,13 +64,13 @@ void		storage_with_dots(t_dirent *dp, t_file **files,
 void		s_byflags(t_file **files, t_file **folders, int flag)
 {
 	if (!(flag & f_no_sort))
-		mergeSort(&(*files), flag);
+		g_merge_sort(&(*files), flag);
 	print_total(flag);
 	if (flag & f_recu)
 	{
 		print_files(*files, flag);
 		if (!(flag & f_no_sort))
-			mergeSort(&(*folders), flag);
+			g_merge_sort(&(*folders), flag);
 		print_folders(*folders, flag);
 	}
 	else

@@ -6,7 +6,7 @@
 /*   By: mfilahi <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/13 11:41:34 by mfilahi           #+#    #+#             */
-/*   Updated: 2018/12/13 14:47:47 by mfilahi          ###   ########.fr       */
+/*   Updated: 2018/12/13 14:59:00 by amoutik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,46 +46,46 @@ void	partition(t_file *head, t_file **front, t_file **back)
 
 t_file	*merged_lists(t_file *a, t_file *b)
 {
-	t_file *mergedList;
+	t_file *mergedlist;
 
-	mergedList = NULL;
+	mergedlist = NULL;
 	if (a == NULL)
 		return (b);
 	else if (b == NULL)
 		return (a);
 	if (ft_strcmp(a->d_name, b->d_name) <= 0)
 	{
-		mergedList = a;
-		mergedList->next = mergedLists(a->next, b);
+		mergedlist = a;
+		mergedlist->next = merged_lists(a->next, b);
 	}
 	else
 	{
-		mergedList = b;
-		mergedList->next = mergedLists(a, b->next);
+		mergedlist = b;
+		mergedlist->next = merged_lists(a, b->next);
 	}
-	return (mergedList);
+	return (mergedlist);
 }
 
 t_file	*merged_lists_time(t_file *a, t_file *b)
 {
-	t_file *mergedList;
+	t_file *mergedlist;
 
-	mergedList = NULL;
+	mergedlist = NULL;
 	if (a == NULL)
 		return (b);
 	else if (b == NULL)
 		return (a);
 	if (ft_timecmp(a->f_stat.smtime, b->f_stat.smtime) == 0)
 	{
-		mergedList = a;
-		mergedList->next = mergedLists_time(a->next, b);
+		mergedlist = a;
+		mergedlist->next = merged_lists_time(a->next, b);
 	}
 	else
 	{
-		mergedList = b;
-		mergedList->next = mergedLists_time(a, b->next);
+		mergedlist = b;
+		mergedlist->next = merged_lists_time(a, b->next);
 	}
-	return (mergedList);
+	return (mergedlist);
 }
 
 void	g_merge_sort(t_file **source, int flag)

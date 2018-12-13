@@ -6,7 +6,7 @@
 /*   By: amoutik <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 11:05:10 by amoutik           #+#    #+#             */
-/*   Updated: 2018/12/13 14:48:08 by mfilahi          ###   ########.fr       */
+/*   Updated: 2018/12/13 15:03:03 by amoutik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,8 @@ void				print_files(t_file *list_files, int flag);
 void				print_list(t_file *list_files, int flag, struct stat *sb);
 void				print_total(int flag);
 void				get_len(t_stat *stat, struct stat sb);
-void				free_memory(t_file **folders, t_file **files, t_dirent **dp);
+void				free_memory(t_file **folders, t_file **files,
+						t_dirent **dp);
 void				param_files(char **files, int flag, char **argv, int argc);
 char				**test_file_exist(char **argv, int argc, int start);
 void				parse_op_1(char *op, int *flag);
