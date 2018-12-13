@@ -20,7 +20,7 @@ NC = \033[1;0m
 
 all: $(NAME)
 
-$(NAME):$(OBJECT)
+$(NAME):$(OBJECT) $(FTPRINTF)
 	@echo "$(RED)Linking...$(NC)"
 	$(CC) $(OBJECT) $(FTPRINTF) -o $(NAME)
 	@echo "$(GREEN)Finished...$(NC)"
@@ -34,9 +34,11 @@ $(BIN)/%.o : $(SRC)/%.c
 
 clean:
 	rm -rf $(OBJECT)
+	make -C ft_printf clean
 
 fclean:clean
 	rm -rf $(NAME)
+	make -C ft_printf fclean
 
 re : fclean all
 

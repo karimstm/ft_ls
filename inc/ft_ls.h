@@ -6,7 +6,7 @@
 /*   By: amoutik <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/12/05 11:05:10 by amoutik           #+#    #+#             */
-/*   Updated: 2018/12/13 09:37:50 by amoutik          ###   ########.fr       */
+/*   Updated: 2018/12/13 11:20:42 by amoutik          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,33 +16,32 @@
 # include <stdlib.h>
 # include <dirent.h>
 # include <sys/stat.h>
-#include <sys/types.h>
+# include <sys/types.h>
 # include <pwd.h>
 # include <string.h>
 # include <grp.h>
 # include <time.h>
 # include <unistd.h>
-#include <sys/xattr.h>
-#include <sys/acl.h>
-#include "ft_printf.h"
+# include <sys/xattr.h>
+# include <sys/acl.h>
+# include "ft_printf.h"
 
-# define 	SUCCESS 0
-# define 	FAILURE 1
-# define 	DANGER 2
-# define 	MAX(a, b) ((a) >= (b) ? (a) : (b))
-# define	M_ISDIR(m)	((m & 0170000) == 0040000)	/* directory */
-# define	M_ISCHR(m)	((m & 0170000) == 0020000)	/* char special */
-# define	M_ISBLK(m)	((m & 0170000) == 0060000)	/* block special */
-# define	M_ISREG(m)	((m & 0170000) == 0100000)	/* regular file */
-# define	M_ISFIFO(m)	((m & 0170000) == 0010000 || \
-					 (m & 0170000) == 0140000)	/* fifo or socket */
-# define	M_ISLNK(m)	((m & 0170000) == 0120000)	/* symbolic link */
-# define	M_ISSOCK(m)	((m & 0170000) == 0010000 || \
-					 (m & 0170000) == 0140000)	/* fifo or socket */
-# define	M_ISWHT(m)	((m & 0170000) == 0160000)	/* whiteout */
+# define SUCCESS 0
+# define FAILURE 1
+# define DANGER 2
+# define MAX(a, b) ((a) >= (b) ? (a) : (b))
+# define M_FIFO(m) (((m & 0170000) == 0140000) ? 1 : 0)
+# define M_ISDIR(m)	((m & 0170000) == 0040000)
+# define M_ISCHR(m)	((m & 0170000) == 0020000)
+# define M_ISBLK(m)	((m & 0170000) == 0060000)
+# define M_ISREG(m)	((m & 0170000) == 0100000)
+# define M_ISFIFO(m) ((m & 0170000) == 0010000 || M_FIFO
+# define M_ISLNK(m)	((m & 0170000) == 0120000)
+# define M_ISSOCK(m) ((m & 0170000) == 0010000 || M_FIFO
+# define M_ISWHT(m)	((m & 0170000) == 0160000)
 
 typedef struct dirent	t_dirent;
-typedef long long int	llint;
+typedef long long int	t_llint;
 
 enum	e_flags
 {
@@ -60,15 +59,15 @@ enum	e_flags
 	f_blocksz = 0x800
 };
 
-typedef struct 		s_stat
+typedef struct		s_stat
 {
 	time_t	smtime;
 	int		hardlen;
 	size_t	userlen;
-	size_t 	grouplen;
+	size_t	grouplen;
 	int		sizelen;
 	int		blocksize;
-	llint	total_block;
+	t_llint	total_block;
 }					t_stat;
 
 typedef struct		s_file
@@ -91,7 +90,8 @@ void				ft_putendl_fd(char const *str, int fd);
 void				ft_putstr_fd(char const *str, int fd);
 void				ft_putcharl_fd(char c, int fd);
 void				mergeSort(t_file **source, int flag);
-void				ft_push(struct s_file **head_ref, t_dirent *dp, t_stat stat, char *path);
+void				ft_push(struct s_file **head_ref, t_dirent *dp,
+							t_stat stat, char *path);
 char				*ft_strjoin(const char *s1, const char *s2);
 void				ft_ls(char *path, int flag);
 char				*ft_strdup(const char *src);
